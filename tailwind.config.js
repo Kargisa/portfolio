@@ -17,7 +17,10 @@ export default {
           800: '#CC4522',
           900: '#A5371B'
         }
-      }
+      },
+      fontFamily: {
+        sans: ['"M PLUS Rounded 1c"', "sans-serif"],
+      },
     },
   },
   darkMode: 'class',
