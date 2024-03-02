@@ -954,6 +954,11 @@ locate-character@^3.0.0:
   resolved "https://registry.npmjs.org/lru-cache/-/lru-cache-10.2.0.tgz"
   integrity sha512-2bIM8x+VAf6JT4bKAljS1qUWgMsqZRPGJS6FSahIMPVvctcNhyVp7AJu7quxOW9jwkryBReKZY5tY5JYv2n/7Q==
 
+lucide-svelte@^0.344.0:
+  version "0.344.0"
+  resolved "https://registry.yarnpkg.com/lucide-svelte/-/lucide-svelte-0.344.0.tgz#cb0d43b1dab80edb39a0ded057a71b90ec680689"
+  integrity sha512-OB/iazftjl2w+vpH7WJqbhHONoMqUT6aaeYvu1BQSgvc7+CKXByu4xvbI7RMOJykaiF/u3LAhyd2ucYBj+rEZQ==
+
 magic-string@^0.30.4, magic-string@^0.30.5:
   version "0.30.7"
   resolved "https://registry.npmjs.org/magic-string/-/magic-string-0.30.7.tgz"
