@@ -1,20 +1,19 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
-	import FileContentItem from './../components/fileContent/fileContentItem.svelte';
-	import FileContent from './../components/fileContent/fileContent.svelte';
+	import { Button } from 'flowbite-svelte';
+	import { invalidate } from '$app/navigation';
 	import { page } from '$app/stores';
-	import { Fingerprint, Orbit, ScrollText, Sun } from 'lucide-svelte';
-	import AboutMe from '../components/aboutMe.svelte';
-	import Cv from '../components/information/cv.svelte';
+	import type { Post } from '$lib/types/server';
+	import { Fingerprint, Orbit, ScrollText } from 'lucide-svelte';
 	import QuickAccess from '../components/quickAccess.svelte';
 	import { existingFiles } from '../lib/types/explorer';
+	import type { PageData, PageServerData } from './$types';
 	import Explorer from './../components/explorer/explorer.svelte';
 	import File from './../components/explorer/file.svelte';
 	import Folder from './../components/explorer/folder.svelte';
-	import { onMount } from 'svelte';
-	import type { PageServerData } from './$types';
+	import FileContent from './../components/fileContent/fileContent.svelte';
+	import FileContentItem from './../components/fileContent/fileContentItem.svelte';
 
-	export let data: PageServerData;
+	export let data: PageData;
 
 	let extendInformation = data.cookies.extendInformation;
 	let extendProjects = data.cookies.extendProjects;
@@ -22,21 +21,22 @@
 
 	$: selectedFile = $page.url.searchParams.get('file')?.toLowerCase() ?? '';
 
-	onMount(() => {
-		if (selectedFile === '') {
-			goto(`?file=${existingFiles.aboutMe}`);
-		}
-	});
+	const getBlogSlugs = (): string[] => {
+		const posts: Post[] = data.projectPosts;
+		const slugs: string[] = posts.map((p) => p.slug);
 
-	let openFiles: { label: string; name: string }[] = [];
+		return slugs;
+	};
+
+	let openFiles: { slug: string; title: string }[] = [];
 
 	const addQuickAccessFile = (label: string, name: string) => {
-		openFiles.push({ label, name });
+		openFiles.push({ slug: label, title: name });
 		openFiles = [...openFiles];
 	};
 
 	const removeQuickAccessFile = (label: string) => {
-		openFiles = openFiles.filter((f) => f.label !== label);
+		openFiles = openFiles.filter((f) => f.slug !== label);
 	};
 </script>
 
@@ -51,14 +51,14 @@
 		</button>
 	</div>
 	<div class="flex h-full">
-		<div class="h-full min-w-64 resize space-y-2 border-r-2 p-2">
+		<div class="h-full min-w-64 resize border-r-2 p-2">
 			<Explorer>
 				<!-- PUT FILE EXPLORER HERE -->
 				<File
 					label={existingFiles.aboutMe}
 					bind:selectedFile
 					name="About Me"
-					path="?file={existingFiles.aboutMe}"
+					href="?file={existingFiles.aboutMe}"
 					on:dblclick={() => {
 						addQuickAccessFile(existingFiles.aboutMe, 'About Me');
 					}}
@@ -70,7 +70,7 @@
 						label={existingFiles.cv}
 						bind:selectedFile
 						name="curriculum_vitae.pdf"
-						path="?file={existingFiles.cv}"
+						href="?file={existingFiles.cv}"
 						on:dblclick={() => {
 							addQuickAccessFile(existingFiles.cv, 'curriculum_vitae.pdf');
 						}}
@@ -79,31 +79,32 @@
 					</File>
 				</Folder>
 				<Folder name="Projects" bind:extend={extendProjects} cookie="extendProjects">
-					<File
-						label={existingFiles.pathtracer}
-						bind:selectedFile
-						name="Path_Tracer.pdf"
-						path="?file={existingFiles.pathtracer}"
-						on:dblclick={() => {
-							addQuickAccessFile(existingFiles.pathtracer, 'Path_Tracer.pdf');
-						}}
-					>
-						<Sun class="size-5" />
-					</File>
-					<File
-						label={existingFiles.newtons}
-						bind:selectedFile
-						name="Physics_Engine.pdf"
-						path="?file={existingFiles.newtons}"
-						on:dblclick={() => {
-							addQuickAccessFile(existingFiles.newtons, 'Physics_Engine.pdf');
-						}}
-					>
-						<Orbit class="size-5" />
-					</File>
+					{#each data.projectPosts as post}
+						<File
+							href={`?file=${post.slug}`}
+							label={post.slug}
+							name={post.title}
+							bind:selectedFile
+							on:dblclick={() => addQuickAccessFile(post.slug, post.title)}
+						>
+							<Orbit class="size-5" />
+						</File>
+					{/each}
 				</Folder>
 
-				<Folder name="Blog" bind:extend={extendBlog} cookie="extendBlog"></Folder>
+				<Folder name="Blog" bind:extend={extendBlog} cookie="extendBlog">
+					{#each data.blogPosts as post}
+						<File
+							href={`?file=${post.slug}`}
+							label={post.slug}
+							name={post.title}
+							bind:selectedFile
+							on:dblclick={() => addQuickAccessFile(post.slug, post.title)}
+						>
+							<Orbit class="size-5" />
+						</File>
+					{/each}
+				</Folder>
 			</Explorer>
 		</div>
 		<div class="flex w-full flex-col justify-center">
@@ -111,22 +112,24 @@
 				<!-- PUT FILE QUICK ACCESS HERE -->
 				{#each openFiles as file}
 					<QuickAccess
-						label={file.label}
+						label={file.slug}
 						bind:selectedFile
-						name={file.name}
-						path="?file={file.label}"
+						name={file.title}
+						href="?file={file.slug}"
 						on:remove={() => {
-							removeQuickAccessFile(file.label);
+							removeQuickAccessFile(file.slug);
 						}}
 					/>
 				{/each}
 			</div>
 			<FileContent>
-				<!-- PUT FILES HERE -->
-				<FileContentItem label={existingFiles.cv} bind:selectedFile><Cv /></FileContentItem>
-				<FileContentItem label={existingFiles.aboutMe} bind:selectedFile
-					><AboutMe /></FileContentItem
-				>
+				<!-- PUT FILES HERE load on query param change-->
+				{#if data.file}
+					<FileContentItem md={true}>
+						<svelte:component this={data.file.default} />
+						<Button href={`/blog/${selectedFile}`}>See All</Button>
+					</FileContentItem>
+				{/if}
 			</FileContent>
 		</div>
 	</div>

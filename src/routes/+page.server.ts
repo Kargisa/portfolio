@@ -1,18 +1,23 @@
 import type { Post } from "$lib/types/server";
 import type { PageServerLoad } from "./$types";
 
-export const load: PageServerLoad = async ({cookies, fetch}) => {
-    const promise = fetch('api/posts');
+export const load: PageServerLoad = async ({url, cookies, fetch}) => {
+    const blogPromis = fetch('api/posts/blog');
+    const projectPromis = fetch('api/posts/projects');
 
     const extendInformation = cookies.get('extendInfo');
     const extendProjects = cookies.get('extendProjects');
     const extendBlog = cookies.get('extendBlog');
 
-    const response = await promise;
-    const posts: Post[] = await response.json();
-
+    const blogResponse = await blogPromis;
+    const blogPosts: Post[] = await blogResponse.json();
+    
+    const projectResponse = await projectPromis;
+    const projectPosts: Post[] = await projectResponse.json();
+    
     return {
-        posts: posts,
+        blogPosts: blogPosts,
+        projectPosts: projectPosts,
         cookies: {
             extendInformation: extendInformation === 'true',
             extendProjects: extendProjects === 'true',

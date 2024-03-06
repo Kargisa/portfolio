@@ -1,4 +1,4 @@
-type PortfolioFiles = {
+export type PortfolioFiles = {
     readonly cv: string
     readonly aboutMe: string
     readonly pathtracer: string
