@@ -1,8 +1,9 @@
 <script lang="ts">
-	export let label: string;
-	export let selectedFile: string;
+	export let md: boolean = false;
 </script>
 
-{#if label === selectedFile}
-	<slot />
-{/if}
+<div class="flex justify-center">
+	<article class='{md ? 'prose' : ''} flex  flex-col items-center'>
+		<slot />
+	</article>
+</div>
