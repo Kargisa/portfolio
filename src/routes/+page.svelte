@@ -121,6 +121,14 @@
 						}}
 					/>
 				{/each}
+				<QuickAccess
+					label="Dharminder"
++					name={Dharminder.txt}
+					href="https://dharmann.at"
+					on:remove={() => {
+						window.location.href = 'https://dharmann.at';
+					}}
+				/>
 			</div>
 			<FileContent>
 				<!-- PUT FILES HERE load on query param change-->
