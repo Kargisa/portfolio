@@ -12,7 +12,13 @@ async function getPosts() {
 		
 		const splitPath = path.split('/');
 		const slug = splitPath.at(-1)?.replace('.md', '');
-		const categories = splitPath.slice(3, -1).map(s => s.split('-').slice(1).join('-'));
+		const categories = splitPath.slice(3, -1).map(s => {
+			const split = s.split('-');
+			if (split.length === 1){
+				return split[0];
+			}
+			return split.slice(1).join('-');
+		});
 		
 		if (file && typeof file === 'object' && 'metadata' in file && slug) {
 			const metadata = file.metadata as Omit<Post, 'slug'>
