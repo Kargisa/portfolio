@@ -1,19 +1,15 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
-	import { Orbit } from 'lucide-svelte';
 	import QuickAccess from '../components/quickAccess.svelte';
 	import type { PageData } from './$types';
 	import Explorer from './../components/explorer/explorer.svelte';
-	import File from './../components/explorer/file.svelte';
 	import Folder from './../components/explorer/folder.svelte';
 	import FileContent from './../components/fileContent/fileContent.svelte';
 	import FileContentItem from './../components/fileContent/fileContentItem.svelte';
 	import { toTitleCase } from './../lib/helpers/stringHelper';
 
 	export let data: PageData;
-
-	let extendProjects = data.cookies.extendProjects;
 
 	$: selectedFile = $page.url.searchParams.get('post')?.toLowerCase() ?? '';
 
@@ -46,20 +42,13 @@
 				{#each data.categories as category}
 					<Folder
 						name={toTitleCase(category.title)}
-						bind:extend={extendProjects}
+						extend={false}
 						cookie="extend{toTitleCase(category.title)}"
+						recursiveCategories={category.categories}
+						recursivePosts={category.posts}
+						bind:selectedFile
+						on:filedbclick={(event) => addQuickAccessFile(event.detail.label, event.detail.name)}
 					>
-						{#each category.posts as post}
-							<File
-								href={`?post=${post.slug}`}
-								label={post.slug}
-								name={post.title}
-								bind:selectedFile
-								on:dblclick={() => addQuickAccessFile(post.slug, post.title)}
-							>
-								<Orbit class="size-5" />
-							</File>
-						{/each}
 					</Folder>
 				{/each}
 			</Explorer>
