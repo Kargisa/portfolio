@@ -5,7 +5,9 @@
 </script>
 
 <div class="flex w-screen justify-center p-10">
-	<article class="prose flex flex-col items-center">
-		<svelte:component this={data.content} />
+	<article class="prose flex h-full flex-col items-center">
+		{#if data.content}
+			<svelte:component this={data.content} />
+		{/if}
 	</article>
 </div>

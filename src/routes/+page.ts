@@ -1,21 +1,24 @@
+import { error } from "@sveltejs/kit";
 import type { PageLoad } from "./$types";
 
-export const load: PageLoad = async ({data, url, fetch}) => {
+export const load: PageLoad = async ({data, url}) => {
 
-    const slug = url.searchParams.get('file') ?? '';
-    let file;
-    try {
-        file = await import(`../posts/projects/${slug}.md`);
+    const slug = url.searchParams.get('post') ?? '';
+    let match;
+
+    if (slug) {
+        const modules = import.meta.glob(`/src/posts/**/*.{md,svx,svelte.md}`);
+        const [path, resolver] = Object.entries(modules).find(([path, resolver]) => slugFromPath(path) === slug) ?? [];
+        match = { path, resolver: resolver};
     }
-    catch{
-        try {
-            file = await import(`../posts/blog/${slug}.md`);
-        }
-        catch{}
-    }
+
+    const post = await match?.resolver?.() as any;
 
     return {
-        file: file,
+        file: post,
         ...data
     }
 }
+
+const slugFromPath = (path: string) =>
+	path.match(/([\w-]+)\.(svelte\.md|md|svx)/i)?.[1] ?? null;

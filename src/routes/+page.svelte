@@ -1,32 +1,21 @@
 <script lang="ts">
-	import { Button } from 'flowbite-svelte';
-	import { invalidate } from '$app/navigation';
+	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
-	import type { Post } from '$lib/types/server';
-	import { Fingerprint, Orbit, ScrollText } from 'lucide-svelte';
+	import { Orbit } from 'lucide-svelte';
 	import QuickAccess from '../components/quickAccess.svelte';
-	import { existingFiles } from '../lib/types/explorer';
-	import type { PageData, PageServerData } from './$types';
+	import type { PageData } from './$types';
 	import Explorer from './../components/explorer/explorer.svelte';
 	import File from './../components/explorer/file.svelte';
 	import Folder from './../components/explorer/folder.svelte';
 	import FileContent from './../components/fileContent/fileContent.svelte';
 	import FileContentItem from './../components/fileContent/fileContentItem.svelte';
+	import { toTitleCase } from './../lib/helpers/stringHelper';
 
 	export let data: PageData;
 
-	let extendInformation = data.cookies.extendInformation;
 	let extendProjects = data.cookies.extendProjects;
-	let extendBlog = data.cookies.extendBlog;
 
-	$: selectedFile = $page.url.searchParams.get('file')?.toLowerCase() ?? '';
-
-	const getBlogSlugs = (): string[] => {
-		const posts: Post[] = data.projectPosts;
-		const slugs: string[] = posts.map((p) => p.slug);
-
-		return slugs;
-	};
+	$: selectedFile = $page.url.searchParams.get('post')?.toLowerCase() ?? '';
 
 	let openFiles: { slug: string; title: string }[] = [];
 
@@ -37,12 +26,12 @@
 
 	const removeQuickAccessFile = (label: string) => {
 		openFiles = openFiles.filter((f) => f.slug !== label);
+		goto(`?post=${openFiles.at(-1)?.slug ?? 'aboutme'}`);
 	};
 </script>
 
-<div class="h-screen w-screen flex-col overflow-hidden">
-	<div class="flex w-full items-center justify-center space-x-4 border-b-2 px-2">
-		<!-- PUT TOOLBAR HERE -->
+<div class="flex h-screen w-screen flex-col overflow-hidden">
+	<div class="flex items-center justify-center space-x-4 border-b-2">
 		<button class="flex items-center">
 			<p>GitHub</p>
 		</button>
@@ -50,61 +39,29 @@
 			<p>LinkedIn</p>
 		</button>
 	</div>
-	<div class="flex h-full">
+	<div class="flex h-screen">
 		<div class="h-full min-w-64 resize border-r-2 p-2">
 			<Explorer>
 				<!-- PUT FILE EXPLORER HERE -->
-				<File
-					label={existingFiles.aboutMe}
-					bind:selectedFile
-					name="About Me"
-					href="?file={existingFiles.aboutMe}"
-					on:dblclick={() => {
-						addQuickAccessFile(existingFiles.aboutMe, 'About Me');
-					}}
-				>
-					<Fingerprint class="size-5" />
-				</File>
-				<Folder bind:extend={extendInformation} name="Information" cookie="extendInfo">
-					<File
-						label={existingFiles.cv}
-						bind:selectedFile
-						name="curriculum_vitae.pdf"
-						href="?file={existingFiles.cv}"
-						on:dblclick={() => {
-							addQuickAccessFile(existingFiles.cv, 'curriculum_vitae.pdf');
-						}}
+				{#each data.categories as category}
+					<Folder
+						name={toTitleCase(category.title)}
+						bind:extend={extendProjects}
+						cookie="extend{toTitleCase(category.title)}"
 					>
-						<ScrollText class="size-5" />
-					</File>
-				</Folder>
-				<Folder name="Projects" bind:extend={extendProjects} cookie="extendProjects">
-					{#each data.projectPosts as post}
-						<File
-							href={`?file=${post.slug}`}
-							label={post.slug}
-							name={post.title}
-							bind:selectedFile
-							on:dblclick={() => addQuickAccessFile(post.slug, post.title)}
-						>
-							<Orbit class="size-5" />
-						</File>
-					{/each}
-				</Folder>
-
-				<Folder name="Blog" bind:extend={extendBlog} cookie="extendBlog">
-					{#each data.blogPosts as post}
-						<File
-							href={`?file=${post.slug}`}
-							label={post.slug}
-							name={post.title}
-							bind:selectedFile
-							on:dblclick={() => addQuickAccessFile(post.slug, post.title)}
-						>
-							<Orbit class="size-5" />
-						</File>
-					{/each}
-				</Folder>
+						{#each category.posts as post}
+							<File
+								href={`?post=${post.slug}`}
+								label={post.slug}
+								name={post.title}
+								bind:selectedFile
+								on:dblclick={() => addQuickAccessFile(post.slug, post.title)}
+							>
+								<Orbit class="size-5" />
+							</File>
+						{/each}
+					</Folder>
+				{/each}
 			</Explorer>
 		</div>
 		<div class="flex w-full flex-col justify-center">
@@ -115,7 +72,7 @@
 						label={file.slug}
 						bind:selectedFile
 						name={file.title}
-						href="?file={file.slug}"
+						href="?post={file.slug}"
 						on:remove={() => {
 							removeQuickAccessFile(file.slug);
 						}}
@@ -131,11 +88,10 @@
 				/>
 			</div>
 			<FileContent>
-				<!-- PUT FILES HERE load on query param change-->
+				<!-- CURRNET FILE HERE-->
 				{#if data.file}
 					<FileContentItem md={true}>
 						<svelte:component this={data.file.default} />
-						<Button href={`/blog/${selectedFile}`}>See All</Button>
 					</FileContentItem>
 				{/if}
 			</FileContent>
