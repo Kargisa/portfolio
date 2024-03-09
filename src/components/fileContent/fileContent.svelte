@@ -1,6 +1,6 @@
 <script lang="ts">
 </script>
 
-<div class="h-full w-full overflow-auto p-4">
+<div class="h-full w-full overflow-auto">
 	<slot />
 </div>

@@ -10,13 +10,13 @@ published: true
     import {getAge} from "$lib/helpers/date.ts";
 </script>
 
-# Luca Wolf
+# Luca Wolf <br> <p>Kargisa</p>
 
-### Me
+### Hej!
 
-Hej!<br>
 My name is Luca or Kargisa if you want to know my username. <br>
-I am {getAge()} years old.
+I am {getAge()} years old and interested in all things programming,
+but my biggest passion right now is game development or rather engine development.
 
 ### My Motivation
 
@@ -25,17 +25,17 @@ Video games are not only a joy to play but also fascinating.
 It impresses me how you can build such highly detailed worlds and render them in realtime.
 How such simple things like casting a shadow of a mesh to the ground or letting a ball roll down a slope.
 All these things we take for granted as players of those games but for me I want to know more.
-That is why I started my own [projects](). I realy wanted to create my own worlds
+That is why I started my own [projects](?post=projects 'Projects'). I realy wanted to create my own worlds
 with its own rules like all the games I have played over the years.
 What I want to do here is to radiate my pation for game development to everyone who is interested
 and help those who are in need for some inspiration or guidance.
 
 ### More About Me
 
-If you are interested in the things I make check out my [projects]() and
-[GitHub](https://github.com/Kargisa "github.com/Kargisa" target="\_blank").
-When I find something interesting, cool or just something others should know about, I will make blog [posts]() about it.
-Last but not lest if you want to know more about me, you can take a look at my [information](?post=information) and contact me if you want.
+If you are interested in the things I make check out my [projects](?post=projects 'Projects') and
+[GitHub](https://github.com/Kargisa "Kargisa GitHub" target="\_blank").
+When I find interesting, cool or just stuff others should know about, I will make [blog posts](?post=blog 'Blog') about it.
+Last but not lest if you want to know more about me, you can take a look at my [information](?post=information 'Infos') and contact me if you would like.
 
 <style>
     p{
