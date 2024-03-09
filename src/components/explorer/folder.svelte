@@ -17,9 +17,11 @@
 	const dispatcher = createEventDispatcher();
 </script>
 
-<div class="flex flex-col justify-center space-y-1">
+<div
+	class="flex flex-col justify-center space-y-1 pl-2"
+>
 	<button
-		class="flex w-full items-center space-x-2"
+		class="flex w-full h-8 items-center space-x-2 hover:bg-blue-50"
 		on:click={() => {
 			extend = !extend;
 			writeCookie(cookie, extend.toString(), 365, '/');
@@ -33,7 +35,7 @@
 		<p>{name}</p>
 	</button>
 	{#if extend}
-		<div class="flex flex-col space-y-1 pl-4">
+		<div class="flex flex-col space-y-1">
 			<slot />
 			{#each recursivePosts as post}
 				<File
@@ -49,15 +51,17 @@
 				</File>
 			{/each}
 			{#each recursiveCategories as category}
-				<svelte:self
-					extend={false}
-					name={toTitleCase(category.title)}
-					cookie={`extend${toTitleCase(category.title)}`}
-					recursiveCategories={category.categories}
-					recursivePosts={category.posts}
-					bind:selectedFile
-					on:filedbclick={(event) => dispatcher('filedbclick', { ...event.detail })}
-				/>
+				<div class="">
+					<svelte:self
+						extend={false}
+						name={toTitleCase(category.title)}
+						cookie={`extend${toTitleCase(category.title)}`}
+						recursiveCategories={category.categories}
+						recursivePosts={category.posts}
+						bind:selectedFile
+						on:filedbclick={(event) => dispatcher('filedbclick', { ...event.detail })}
+					/>
+				</div>
 			{/each}
 		</div>
 	{/if}

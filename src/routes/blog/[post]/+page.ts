@@ -1,5 +1,6 @@
 import { error } from "@sveltejs/kit";
 import type { PageLoad } from "./$types";
+import { slugFromPath } from "$lib/helpers/stringHelper";
 
 export const load: PageLoad = async ({url, params }) => {
     const slug = params.post;
@@ -16,6 +17,7 @@ export const load: PageLoad = async ({url, params }) => {
     let post: {default: any, metadata: any} = {default: null, metadata: null};;
     if (match){
         post = await match?.resolver?.() as any;
+        post.metadata.slug = slug;
     } 
 
     return {
@@ -23,6 +25,3 @@ export const load: PageLoad = async ({url, params }) => {
         metadata: post.metadata,
     }
 } 
-
-const slugFromPath = (path: string) =>
-	path.match(/([\w-]+)\.(svelte\.md|md|svx)/i)?.[1] ?? null;

@@ -13,7 +13,9 @@
 
 	$: selectedFile = $page.url.searchParams.get('post')?.toLowerCase() ?? '';
 
-	let openFiles: { slug: string; title: string }[] = [];
+	let openFiles: { slug: string; title: string }[] = [
+		{ slug: data.post.metadata.slug, title: data.post.metadata.title }
+	];
 
 	const addQuickAccessFile = (label: string, name: string) => {
 		openFiles.push({ slug: label, title: name });
@@ -27,16 +29,8 @@
 </script>
 
 <div class="flex h-screen w-screen flex-col overflow-hidden">
-	<div class="flex items-center justify-center space-x-4 border-b-2">
-		<button class="flex items-center">
-			<p>GitHub</p>
-		</button>
-		<button class="flex items-center">
-			<p>LinkedIn</p>
-		</button>
-	</div>
 	<div class="flex h-screen">
-		<div class="h-full min-w-64 resize border-r-2 p-2">
+		<div class="h-full min-w-64 resize border-r-2 pt-2">
 			<Explorer>
 				<!-- PUT FILE EXPLORER HERE -->
 				{#each data.categories as category}
@@ -48,8 +42,7 @@
 						recursivePosts={category.posts}
 						bind:selectedFile
 						on:filedbclick={(event) => addQuickAccessFile(event.detail.label, event.detail.name)}
-					>
-					</Folder>
+					></Folder>
 				{/each}
 			</Explorer>
 		</div>
@@ -70,12 +63,24 @@
 			</div>
 			<FileContent>
 				<!-- CURRNET FILE HERE-->
-				{#if data.file}
+				{#if data.post}
 					<FileContentItem md={true}>
-						<svelte:component this={data.file.default} />
+						<svelte:component this={data.post.default} />
 					</FileContentItem>
 				{/if}
 			</FileContent>
+			<div class="flex items-center justify-center space-x-4 border-t-2 p-1">
+				<button class="flex items-center">
+					<a href="https:/github.com/Kargisa" target="_blank" title="Kargisa GitHub">GitHub</a>
+				</button>
+				<button class="flex items-center">
+					<a
+						href="https://www.linkedin.com/in/wolf-luca/"
+						target="_blank"
+						title="Luca Wolf LinkedIn">LinkedIn</a
+					>
+				</button>
+			</div>
 		</div>
 	</div>
 </div>
