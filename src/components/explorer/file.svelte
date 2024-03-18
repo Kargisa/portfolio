@@ -20,7 +20,7 @@
 
 <a
 	{href}
-	class="flex w-full items-center h-8 space-x-3 pl-4 {selectedFile === label
+	class="flex h-8 w-full items-center space-x-3 pl-4 {selectedFile === label
 		? 'bg-blue-200'
 		: 'hover:bg-blue-50'}"
 	on:click={click}

@@ -7,14 +7,13 @@ export const load: PageLoad = async ({data, url}) => {
     const slug = url.searchParams.get('post') ?? '';
     let match;
 
-    if (slug) {
-        const modules = import.meta.glob(`/src/posts/**/*.{md,svx,svelte.md}`);
-        const [path, resolver] = Object.entries(modules).find(([path, resolver]) => slugFromPath(path) === slug) ?? [];
-        match = { path, resolver: resolver};
-    }
+    const modules = import.meta.glob(`/src/posts/**/*.{md,svx,svelte.md}`);
+    const [path, resolver] = Object.entries(modules).find(([path, resolver]) => slugFromPath(path) === slug) ??  Object.entries(modules)[0];
+    match = { path, resolver: resolver};
 
     const post = await match?.resolver?.() as { default: any, metadata: any};
     post.metadata.slug = slug;
+
 
     return {
         post: post,

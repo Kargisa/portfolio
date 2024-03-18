@@ -8,6 +8,7 @@
 	export let label: string;
 	export let selectedFile: string;
 	export let href: string;
+	export let removable: boolean = true;
 
 	const click = () => {
 		dispatch('click');
@@ -23,14 +24,16 @@
 		on:click={click}
 	>
 		<p class="w-full pr-2 text-left">{name}</p>
-		<button
-			class="rounded-md hover:bg-slate-200"
-			on:click|stopPropagation={(event) => {
-				event.preventDefault();
-				dispatch('remove');
-			}}
-		>
-			<X class="size-5" />
-		</button>
+		{#if removable}
+			<button
+				class="rounded-md hover:bg-slate-200"
+				on:click|stopPropagation={(event) => {
+					event.preventDefault();
+					dispatch('remove');
+				}}
+			>
+				<X class="size-5" />
+			</button>
+		{/if}
 	</a>
 </div>
