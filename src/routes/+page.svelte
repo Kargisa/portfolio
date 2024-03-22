@@ -39,20 +39,24 @@
 	};
 
 	const removeQuickAccessFile = (label: string) => {
-		const fileToremove = openFiles.find((f) => f.slug === label);
-		if (!fileToremove) return;
+		const fileToRemove = openFiles.find((f) => f.slug === label);
+		if (!fileToRemove) return;
 
-		const removeIndex = openFiles.findIndex((f) => f.slug === label);
-		let nextIndex = removeIndex <= 1 ? removeIndex : removeIndex - 1;
-		openFiles = openFiles.filter((f) => f.slug !== label);
-		const slug = openFiles.at(nextIndex)?.slug;
-		if (slug) {
-			goto(`?post=${slug}`);
-			return;
+		const removeIndex = openFiles.findIndex((f) => f.slug === fileToRemove.slug);
+		let go: string = selectedFile;
+
+		if (fileToRemove.slug !== selectedFile) {
+			openFiles = openFiles.filter((f) => f.slug !== fileToRemove.slug);
+		} else if (openFiles.length === 2) {
+			go = openFiles[0].slug ? openFiles[0].slug : go;
+			openFiles = openFiles.filter((f) => f.slug !== fileToRemove.slug);
+			changedefaultFile(fileToRemove.slug, fileToRemove.title);
+		} else {
+			openFiles = openFiles.filter((f) => f.slug !== fileToRemove.slug);
+			go = openFiles[removeIndex - 1].slug;
 		}
 
-		changedefaultFile(fileToremove.slug, fileToremove.title);
-		goto(`?post=${fileToremove.slug}`);
+		goto(`?post=${go}`);
 	};
 </script>
 
