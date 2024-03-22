@@ -11,7 +11,7 @@
 
 	export let data: PageData;
 
-	$: selectedFile = $page.url.searchParams.get('post')?.toLowerCase() ?? '';
+	$: selectedFile = data.post.metadata.slug;
 
 	let openFiles: { slug: string; title: string }[] = [
 		{

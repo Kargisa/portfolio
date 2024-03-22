@@ -1,22 +1,22 @@
-import { error } from "@sveltejs/kit";
-import type { PageLoad } from "./$types";
-import { slugFromPath } from "$lib/helpers/stringHelper";
+import { error } from '@sveltejs/kit';
+import type { PageLoad } from './$types';
+import { slugFromPath } from '$lib/helpers/stringHelper';
 
-export const load: PageLoad = async ({data, url}) => {
+export const load: PageLoad = async ({ data, url }) => {
+	const slug = url.searchParams.get('post') ?? '';
+	let match;
 
-    const slug = url.searchParams.get('post') ?? '';
-    let match;
+	const modules = import.meta.glob(`/src/posts/**/*.{md,svx,svelte.md}`);
+	const [path, resolver] =
+		Object.entries(modules).find(([path]) => slugFromPath(path) === slug) ??
+		Object.entries(modules)[0];
+	match = { path, resolver: resolver };
 
-    const modules = import.meta.glob(`/src/posts/**/*.{md,svx,svelte.md}`);
-    const [path, resolver] = Object.entries(modules).find(([path, resolver]) => slugFromPath(path) === slug) ??  Object.entries(modules)[0];
-    match = { path, resolver: resolver};
+	const post = (await match?.resolver?.()) as { default: any; metadata: any };
+	post.metadata.slug = slugFromPath(path);
 
-    const post = await match?.resolver?.() as { default: any, metadata: any};
-    post.metadata.slug = slug;
-
-
-    return {
-        post: post,
-        ...data
-    }
-}
+	return {
+		post: post,
+		...data
+	};
+};
