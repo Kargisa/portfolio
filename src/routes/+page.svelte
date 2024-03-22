@@ -1,15 +1,20 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
+	import Toolbar from '../components/fileContent/toolbar.svelte';
 	import type { PageData } from './$types';
 	import Explorer from './../components/explorer/explorer.svelte';
 	import Folder from './../components/explorer/folder.svelte';
 	import FileContent from './../components/fileContent/fileContent.svelte';
 	import FileContentItem from './../components/fileContent/fileContentItem.svelte';
-	import QuickAccess from './../components/quickAccess.svelte';
+	import QuickAccess from '../components/quckAccess/quickAccess.svelte';
+	import QuickAccessHolder from '../components/quckAccess/quickAccessHolder.svelte';
 	import { toTitleCase } from './../lib/helpers/stringHelper';
+	import LinkHolder from '../components/linkHolder.svelte';
 
 	export let data: PageData;
+
+	let fullscreen: boolean = false;
 
 	$: selectedFile = data.post.metadata.slug;
 
@@ -50,7 +55,7 @@
 		} else if (openFiles.length === 2) {
 			go = openFiles[0].slug ? openFiles[0].slug : go;
 			openFiles = openFiles.filter((f) => f.slug !== fileToRemove.slug);
-			changedefaultFile(fileToRemove.slug, fileToRemove.title);
+			if (!openFiles[0]) changedefaultFile(fileToRemove.slug, fileToRemove.title);
 		} else {
 			openFiles = openFiles.filter((f) => f.slug !== fileToRemove.slug);
 			go = openFiles[removeIndex - 1].slug;
@@ -62,27 +67,25 @@
 
 <div class="flex h-screen w-screen flex-col overflow-hidden">
 	<div class="flex h-screen">
-		<div class="h-full min-w-64 resize border-r-2 pt-2">
-			<Explorer>
-				<!-- PUT FILE EXPLORER HERE -->
-				{#each data.categories as category}
-					<Folder
-						name={toTitleCase(category.title)}
-						extend={false}
-						cookie="extend{toTitleCase(category.title)}"
-						recursiveCategories={category.categories}
-						recursivePosts={category.posts}
-						bind:selectedFile
-						on:filedbclick={(event) => addQuickAccessFile(event.detail.label, event.detail.name)}
-						on:fileclick={(event) => {
-							changedefaultFile(event.detail.label, event.detail.name);
-						}}
-					></Folder>
-				{/each}
-			</Explorer>
-		</div>
+		<Explorer class="h-full min-w-64 resize border-r-2 pt-2" hide={fullscreen}>
+			<!-- PUT FILE EXPLORER HERE -->
+			{#each data.categories as category}
+				<Folder
+					name={toTitleCase(category.title)}
+					extend={false}
+					cookie="extend{toTitleCase(category.title)}"
+					recursiveCategories={category.categories}
+					recursivePosts={category.posts}
+					bind:selectedFile
+					on:filedbclick={(event) => addQuickAccessFile(event.detail.label, event.detail.name)}
+					on:fileclick={(event) => {
+						changedefaultFile(event.detail.label, event.detail.name);
+					}}
+				></Folder>
+			{/each}
+		</Explorer>
 		<div class="flex w-full flex-col justify-center">
-			<div class="flex min-h-10 items-center border-b-2">
+			<QuickAccessHolder hide={fullscreen}>
 				<!-- PUT FILE QUICK ACCESS HERE -->
 				{#each openFiles as file, i}
 					{#if file.slug}
@@ -98,27 +101,19 @@
 						/>
 					{/if}
 				{/each}
+			</QuickAccessHolder>
+			<div class="flex grow overflow-auto">
+				<FileContent class="grow">
+					<!-- CURRNET FILE HERE-->
+					{#if data.post}
+						<FileContentItem md={true}>
+							<svelte:component this={data.post.default} />
+						</FileContentItem>
+					{/if}
+				</FileContent>
+				<Toolbar openFile={selectedFile} bind:fullscreen />
 			</div>
-			<FileContent>
-				<!-- CURRNET FILE HERE-->
-				{#if data.post}
-					<FileContentItem md={true}>
-						<svelte:component this={data.post.default} />
-					</FileContentItem>
-				{/if}
-			</FileContent>
-			<div class="flex items-center justify-center space-x-4 border-t-2 p-1">
-				<button class="flex items-center">
-					<a href="https:/github.com/Kargisa" target="_blank" title="Kargisa GitHub">GitHub</a>
-				</button>
-				<button class="flex items-center">
-					<a
-						href="https://www.linkedin.com/in/wolf-luca/"
-						target="_blank"
-						title="Luca Wolf LinkedIn">LinkedIn</a
-					>
-				</button>
-			</div>
+			<LinkHolder hide={fullscreen} />
 		</div>
 	</div>
 </div>
