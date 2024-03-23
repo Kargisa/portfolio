@@ -104,7 +104,7 @@
 			</QuickAccessHolder>
 			<div class="flex grow overflow-auto">
 				<FileContent class="grow">
-					<!-- CURRNET FILE HERE-->
+					<!-- CURRENT FILE HERE-->
 					{#if data.post}
 						<FileContentItem md={true}>
 							<svelte:component this={data.post.default} />

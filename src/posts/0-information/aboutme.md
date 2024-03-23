@@ -35,7 +35,7 @@ and help those who are in need for some inspiration or guidance.
 If you are interested in the things I make check out my [projects](?post=projects 'Projects') and
 [GitHub](https://github.com/Kargisa "Kargisa GitHub" target="\_blank").
 When I find interesting, cool or just stuff others should know about, I will make [blog posts](?post=blog 'Blog') about it.
-Last but not lest if you want to know more about me, you can take a look at my [information](?post=information 'Infos') and contact me if you would like.
+Last but not lest if you want to know more about me, you can take a look at my [information](?post=information 'Infos') and contact me if you like.
 
 <style>
     p{
