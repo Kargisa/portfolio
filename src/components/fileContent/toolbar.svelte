@@ -7,11 +7,11 @@
 	export let fullscreen: boolean;
 	export let openFile: string;
 
-	const iconSize = 32;
-	const buttonStyle: string = 'p-2';
+	const iconSize = 36;
+	const buttonStyle: string = 'px-2 py-3';
 </script>
 
-<div class="flex h-full flex-col items-center justify-center {clazz}">
+<div class="flex h-full flex-col items-center {clazz}">
 	<button class={buttonStyle} on:click={() => (fullscreen = !fullscreen)}>
 		{#if fullscreen}
 			<Shrink size={iconSize} />
