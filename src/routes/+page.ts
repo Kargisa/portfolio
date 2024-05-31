@@ -20,7 +20,6 @@ export const load: PageLoad = async ({ data, url }) => {
 
 	slug = slugFromPath(path) ?? '';
 	post.metadata.slug = slug;
-	console.log(post.metadata);
 
 	return {
 		post: post,
