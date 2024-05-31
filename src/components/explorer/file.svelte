@@ -26,8 +26,6 @@
 	on:click={click}
 	on:dblclick={dblclick}
 >
-	<div class="h-full {selectedFile === label ? 'border-l-2' : ''}" />
-
 	<slot />
 	<p>{name}</p>
 </a>

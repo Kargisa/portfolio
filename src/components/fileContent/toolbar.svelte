@@ -11,7 +11,7 @@
 	const buttonStyle: string = 'px-2 py-3';
 </script>
 
-<div class="flex h-full flex-col items-center {clazz}">
+<div class="flex h-full flex-col items-center border-l-2 pt-10 {clazz}">
 	<button class={buttonStyle} on:click={() => (fullscreen = !fullscreen)}>
 		{#if fullscreen}
 			<Shrink size={iconSize} />
@@ -19,7 +19,7 @@
 			<Expand size={iconSize} />
 		{/if}
 	</button>
-	<a href={`/blog/${openFile}`} target="_blank" title="new window" class={buttonStyle}>
+	<a href={`/blog/${openFile}`} target="_blank" title="New Window" class={buttonStyle}>
 		<ExternalLink size={iconSize} />
 	</a>
 </div>

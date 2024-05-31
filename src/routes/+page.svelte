@@ -1,22 +1,26 @@
 <script lang="ts">
+	import { browser } from '$app/environment';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
 	import Toolbar from '../components/fileContent/toolbar.svelte';
+	import LinkHolder from '../components/linkHolder.svelte';
+	import QuickAccess from '../components/quckAccess/quickAccess.svelte';
+	import QuickAccessHolder from '../components/quckAccess/quickAccessHolder.svelte';
 	import type { PageData } from './$types';
 	import Explorer from './../components/explorer/explorer.svelte';
 	import Folder from './../components/explorer/folder.svelte';
 	import FileContent from './../components/fileContent/fileContent.svelte';
 	import FileContentItem from './../components/fileContent/fileContentItem.svelte';
-	import QuickAccess from '../components/quckAccess/quickAccess.svelte';
-	import QuickAccessHolder from '../components/quckAccess/quickAccessHolder.svelte';
 	import { toTitleCase } from './../lib/helpers/stringHelper';
-	import LinkHolder from '../components/linkHolder.svelte';
 
 	export let data: PageData;
 
 	let fullscreen: boolean = false;
 
-	$: selectedFile = data.post.metadata.slug;
+	$: selectedFileSlug = data.post.metadata.slug;
+
+	$: if (!openFiles.map((f) => f.slug).includes(selectedFileSlug))
+		changedefaultFile(selectedFileSlug, data.post.metadata.title);
 
 	let openFiles: { slug: string; title: string }[] = [
 		{
@@ -48,9 +52,9 @@
 		if (!fileToRemove) return;
 
 		const removeIndex = openFiles.findIndex((f) => f.slug === fileToRemove.slug);
-		let go: string = selectedFile;
+		let go: string = selectedFileSlug;
 
-		if (fileToRemove.slug !== selectedFile) {
+		if (fileToRemove.slug !== selectedFileSlug) {
 			openFiles = openFiles.filter((f) => f.slug !== fileToRemove.slug);
 		} else if (openFiles.length === 2) {
 			go = openFiles[0].slug ? openFiles[0].slug : go;
@@ -62,6 +66,8 @@
 		}
 
 		goto(`?post=${go}`);
+
+		
 	};
 </script>
 
@@ -76,22 +82,19 @@
 					cookie="extend{toTitleCase(category.title)}"
 					recursiveCategories={category.categories}
 					recursivePosts={category.posts}
-					bind:selectedFile
+					bind:selectedFile={selectedFileSlug}
 					on:filedbclick={(event) => addQuickAccessFile(event.detail.label, event.detail.name)}
-					on:fileclick={(event) => {
-						changedefaultFile(event.detail.label, event.detail.name);
-					}}
 				></Folder>
 			{/each}
 		</Explorer>
 		<div class="flex w-full flex-col justify-center">
-			<QuickAccessHolder hide={fullscreen}>
+			<QuickAccessHolder class="overflow-x-auto" hide={fullscreen}>
 				<!-- PUT FILE QUICK ACCESS HERE -->
 				{#each openFiles as file, i}
 					{#if file.slug}
 						<QuickAccess
 							label={file.slug}
-							bind:selectedFile
+							bind:selectedFile={selectedFileSlug}
 							name={file.title}
 							href="?post={file.slug}"
 							on:remove={() => {
@@ -111,9 +114,9 @@
 						</FileContentItem>
 					{/if}
 				</FileContent>
-				<Toolbar openFile={selectedFile} bind:fullscreen />
 			</div>
 			<LinkHolder hide={fullscreen} />
 		</div>
+		<Toolbar openFile={selectedFileSlug} bind:fullscreen />
 	</div>
 </div>
